@@ -1,4 +1,4 @@
-# Nova — Voice Assistant
+# Vox — Voice Assistant
 
 A desktop voice assistant built with Python and tkinter.
 
@@ -7,7 +7,7 @@ A desktop voice assistant built with Python and tkinter.
 ## Features
 
 - **Speech Recognition** — hands-free voice input via Google Speech API
-- **Text-to-Speech Responses** — Nova speaks every reply aloud using pyttsx3
+- **Text-to-Speech Responses** — Vox speaks every reply aloud using pyttsx3
 - **Weather Information** — live weather for any city via wttr.in
 - **Notes Management** — take, view, delete, and clear persistent notes
 - **Wikipedia Knowledge Search** — instant summaries with follow-up support
