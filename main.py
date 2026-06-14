@@ -1,5 +1,5 @@
 import logging
-from gui import NovaGUI
+from gui import VoxGUI
 from assistant_controller import AssistantController
 
 logging.basicConfig(
@@ -8,7 +8,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-app = NovaGUI()
+app = VoxGUI()
 controller = AssistantController(app)
 
 app.set_listen_callback(controller.start_listening)

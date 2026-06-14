@@ -104,7 +104,7 @@ def process_command(command: str, context: dict | None = None) -> str:
         return "I didn't catch that. Please try again."
 
     # ── Help / capabilities ───────────────────────────────────────────────────
-    elif any(w in command for w in ["what can you do", "help", "commands", "tasks", "capabilities", "features"]):
+    elif any(w in command for w in [ "what can you do", "what are the tasks", "what are the task","help", "commands", "tasks", "capabilities", "features"]):
         return (
             "Here's what I can do:\n"
             "• Time & date — 'what's the time', 'what's the date'\n"
@@ -122,7 +122,7 @@ def process_command(command: str, context: dict | None = None) -> str:
         return "Hello! How can I help you?"
 
     elif "who are you" in command:
-        return "I am Nova, your voice assistant."
+        return "I am Vox, your voice assistant."
 
     elif "how are you" in command:
         return "I'm doing great, thank you for asking!"
@@ -407,7 +407,7 @@ def _wikipedia_rest(title: str, sentences: int = 2) -> str | None:
     try:
         slug = title.replace(" ", "_")
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(slug)}"
-        resp = requests.get(url, timeout=6, headers={"User-Agent": "Nova-Assistant/1.0"})
+        resp = requests.get(url, timeout=6, headers={"User-Agent": "Vox-Assistant/1.0"})
         if resp.status_code == 200:
             data = resp.json()
             # Skip disambiguation pages — their extract starts with "X may refer to:"

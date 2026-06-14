@@ -5,37 +5,35 @@ import platform
 
 
 COLORS = {
-    # Palette: #2C3333 (near-black) · #395B64 (teal) · #A5C9CA (light teal) · #E7F6F2 (mint)
-    "bg":          "#2C3333",   # near-black — app background
-    "panel":       "#323C3C",   # slightly lighter near-black — entry/panel
-    "bubble_user": "#395B64",   # teal — user bubble
-    "bubble_nova": "#2F4F58",   # deeper teal — Nova bubble
-    "accent":      "#A5C9CA",   # light teal — buttons & accents
-    "accent_dim":  "#395B64",   # teal — dimmed accent
-    "text":        "#E7F6F2",   # mint white — primary text
-    "text_dim":    "#A5C9CA",   # light teal — secondary / placeholder
-    "border":      "#1E2828",   # darkest — dividers
-    "btn_bg":      "#395B64",   # teal — button bg
-    "btn_fg":      "#E7F6F2",   # mint — button text
-    "btn_hover":   "#A5C9CA",   # light teal on hover
+    "bg":          "#2C3333",   
+    "panel":       "#323C3C",  
+    "bubble_user": "#395B64",  
+    "bubble_vox": "#2F4F58",  
+    "accent":      "#A5C9CA",   
+    "accent_dim":  "#395B64",   
+    "text":        "#E7F6F2",  
+    "text_dim":    "#A5C9CA",   
+    "border":      "#1E2828", 
+    "btn_bg":      "#395B64",    
+    "btn_fg":      "#E7F6F2",   
+    "btn_hover":   "#A5C9CA",   
     "btn_speak_bg":"#A5C9CA",
     "status_ok":   "#A5C9CA",
     "status_err":  "#D06060",
     "status_busy": "#C8A850",
     "you_label":   "#A5C9CA",
-    "nova_label":  "#E7F6F2",
+    "vox_label":  "#E7F6F2",
     "hint":        "#395B64",
 }
 
-# Maximum bubble width as a fraction of window width
 BUBBLE_MAX_FRACTION = 0.72
 
 
-class NovaGUI:
+class VoxGUI:
 
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Nova — Voice Assistant")
+        self.root.title("Vox — Voice Assistant")
         self.root.geometry("820x680")
         self.root.minsize(600, 520)
         self.root.configure(bg=COLORS["bg"])
@@ -44,7 +42,6 @@ class NovaGUI:
         self.listen_callback = lambda: None
         self.text_callback = lambda cmd: None
 
-        # Track current canvas width for dynamic bubble wraplength
         self._canvas_width = 600
 
         self._build_header()
@@ -55,7 +52,7 @@ class NovaGUI:
 
         self._greet()
 
-    # ── Build sections ────────────────────────────────────────────────────────
+    # ── Build sections 
 
     def _build_header(self):
         header = tk.Frame(self.root, bg=COLORS["bg"], pady=0)
@@ -63,7 +60,7 @@ class NovaGUI:
 
         tk.Label(
             header,
-            text="◈  NOVA",
+            text="◈  Vox",
             font=("Courier New", 22, "bold"),
             bg=COLORS["bg"],
             fg=COLORS["text"],
@@ -146,7 +143,6 @@ class NovaGUI:
         sep = tk.Frame(self.root, bg=COLORS["border"], height=1)
         sep.pack(fill="x", padx=24, pady=(10, 0))
 
-        # Persistent command hint strip
         hint_frame = tk.Frame(self.root, bg=COLORS["bg"])
         hint_frame.pack(fill="x", padx=24, pady=(4, 0))
         tk.Label(
@@ -160,7 +156,6 @@ class NovaGUI:
         bottom = tk.Frame(self.root, bg=COLORS["bg"], pady=12)
         bottom.pack(fill="x", padx=20)
 
-        # Text entry
         entry_frame = tk.Frame(
             bottom,
             bg=COLORS["panel"],
@@ -182,14 +177,12 @@ class NovaGUI:
         self.text_entry.bind("<Return>", self._on_text_submit)
         self._add_placeholder()
 
-        # Send (secondary action — normal weight)
         self.send_btn = self._make_button(
             bottom, "Send", self._on_text_submit, width=7,
             bg=COLORS["btn_bg"], hover=COLORS["btn_hover"]
         )
         self.send_btn.pack(side="left", padx=(8, 0))
 
-        # Speak (primary action — accent border + slightly wider)
         self.listen_btn = self._make_button(
             bottom, "🎤  Speak", lambda: self.listen_callback(), width=12,
             bg=COLORS["accent"], hover=COLORS["btn_hover"],
@@ -197,7 +190,6 @@ class NovaGUI:
         )
         self.listen_btn.pack(side="left", padx=(8, 0))
 
-        # Clear chat — muted styling so it doesn't compete with primary actions
         self.clear_btn = self._make_button(
             bottom, "Clear", self._on_clear_chat, width=7,
             bg=COLORS["panel"], hover=COLORS["border"]
@@ -205,7 +197,7 @@ class NovaGUI:
         self.clear_btn.config(fg=COLORS["text_dim"])
         self.clear_btn.pack(side="left", padx=(8, 0))
 
-    # ── Widget helpers ────────────────────────────────────────────────────────
+    # ── Widget helpers 
 
     def _make_button(self, parent, text, command, width=10,
                      bg=None, hover=None, border_color=None):
@@ -262,7 +254,7 @@ class NovaGUI:
             lambda e: self.listen_callback()
         )
 
-    # ── Public API ────────────────────────────────────────────────────────────
+    # ── Public API 
 
     def set_status(self, text: str):
         if "❌" in text or "error" in text.lower():
@@ -280,7 +272,6 @@ class NovaGUI:
         self.status_label.config(text=clean)
 
     def set_buttons_enabled(self, enabled: bool):
-        """Enable or disable Send/Speak/Clear during processing (debounce)."""
         state = "normal" if enabled else "disabled"
         self.send_btn.config(state=state)
         self.listen_btn.config(state=state)
@@ -300,19 +291,18 @@ class NovaGUI:
     def run(self):
         self.root.mainloop()
 
-    # ── Message bubbles ───────────────────────────────────────────────────────
+    # ── Message bubbles 
 
     def _add_bubble(self, sender: str, message: str, is_user: bool):
         # Tighter vertical padding (was 4 → now 1)
         outer = tk.Frame(self.messages_frame, bg=COLORS["bg"], pady=1)
         outer.pack(fill="x", padx=12)
 
-        bubble_color = COLORS["bubble_user"] if is_user else COLORS["bubble_nova"]
-        label_color  = COLORS["you_label"]   if is_user else COLORS["nova_label"]
+        bubble_color = COLORS["bubble_user"] if is_user else COLORS["bubble_vox"]
+        label_color  = COLORS["you_label"]   if is_user else COLORS["vox_label"]
         side         = "right"               if is_user else "left"
         anchor       = "e"                   if is_user else "w"
 
-        # Dynamic wraplength: fraction of current canvas width
         wrap = max(200, int(self._canvas_width * BUBBLE_MAX_FRACTION))
 
         bubble = tk.Frame(
@@ -323,7 +313,6 @@ class NovaGUI:
         )
         bubble.pack(side=side, anchor=anchor)
 
-        # Sentence-case sender label with better contrast
         tk.Label(
             bubble,
             text=sender.capitalize(),
@@ -342,28 +331,24 @@ class NovaGUI:
             justify="left",
         ).pack(anchor="w", pady=(3, 0))
 
-        # Store label reference so we can update wraplength on resize
-        # (store all bubble labels for later rescaling)
         if not hasattr(self, "_bubble_labels"):
             self._bubble_labels = []
         self._bubble_labels.append(
             bubble.winfo_children()[-1]  # the message Label
         )
 
-    # ── Events ────────────────────────────────────────────────────────────────
-
+    # ── Events 
     def _on_clear_chat(self):
         """Destroy all chat bubbles and re-show the greeting."""
         for widget in self.messages_frame.winfo_children():
             widget.destroy()
         self._bubble_labels = []
         self.canvas.yview_moveto(0.0)
-        self.add_message("Nova", "Chat cleared. How can I help you?")
+        self.add_message("Vox", "Chat cleared. How can I help you?")
 
     def _on_text_submit(self, event=None):
         raw = self.text_entry.get()
         text = raw.strip()
-        # Reject empty string AND the placeholder (handles trailing-space edge case)
         if not text or text == self._placeholder:
             return
         self.text_entry.delete(0, tk.END)
@@ -375,23 +360,20 @@ class NovaGUI:
     def _on_canvas_configure(self, event):
         self.canvas.itemconfig(self.canvas_window, width=event.width)
         self._canvas_width = event.width
-        # Rescale existing bubble labels
         new_wrap = max(200, int(event.width * BUBBLE_MAX_FRACTION))
         for lbl in getattr(self, "_bubble_labels", []):
             try:
                 lbl.config(wraplength=new_wrap)
             except tk.TclError:
-                pass  # widget was destroyed
+                pass 
 
     def _on_mousewheel(self, event):
-        """Windows: event.delta is ±120 multiples. macOS: event.delta is ±1."""
         if platform.system() == "Darwin":
             self.canvas.yview_scroll(int(-1 * event.delta), "units")
         else:
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def _on_mousewheel_linux(self, event):
-        """Linux uses Button-4 (scroll up) and Button-5 (scroll down)."""
         if event.num == 4:
             self.canvas.yview_scroll(-1, "units")
         elif event.num == 5:
@@ -400,9 +382,8 @@ class NovaGUI:
     def _tick_clock(self):
         now = datetime.datetime.now()
         self.clock_label.config(text=now.strftime("%H:%M"))
-        # Schedule next tick at the next full minute boundary
         delay = (60 - now.second) * 1000
         self.root.after(delay, self._tick_clock)
 
     def _greet(self):
-        self.add_message("Nova", "Hello! I'm Nova. Speak or type a command to get started.")
+        self.add_message("Vox", "Hello! I'm Vox. Speak or type a command to get started.")

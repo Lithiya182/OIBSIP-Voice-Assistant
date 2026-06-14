@@ -86,11 +86,11 @@ class AssistantController:
     def _handle_response(self, response: str):
         if response == "exit":
             self._exiting = True
-            self._safe_add_message("Nova", "Goodbye! Have a great day.")
+            self._safe_add_message("Vox", "Goodbye! Have a great day.")
             self.gui.root.after(1500, self.gui.root.destroy)
             return
 
-        self._safe_add_message("Nova", response)
+        self._safe_add_message("Vox", response)
         self._safe_set_status("✅ Ready")
         self._speak_async(response)
 
